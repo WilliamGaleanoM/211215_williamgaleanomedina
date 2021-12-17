@@ -1,0 +1,170 @@
+﻿@model IEnumerable<_211215_williamgaleanomedina.Models.IMEIDataServices>
+
+@{
+    ViewBag.Title = "Home Page";
+}
+
+@*<div class="jumbotron">
+    <h1>CONSULTA</h1>
+    <p class="lead">Aqui podemos consultar información de los productos.</p>   
+</div>*@
+
+<h2></h2>
+<div class="row">
+
+	@using (Html.BeginForm("Index", "Home", FormMethod.Get))
+	{
+		<div class="panel panel-primary">
+			<div class="panel-heading clearfix">
+				List of IMEIDataServices
+				<div class="pull-right action-buttons">
+
+				</div>
+			</div>
+			<div class="panel-body">
+				<div class="row">
+					<div class="form-group">
+						<div class="form-group col-sm-3">
+							<div class="row">
+								<label class="control-label col-sm-3" for="IMEI">
+									IMEI
+								</label>
+								<div class="col-sm-9">
+									@Html.TextBox("IMEI", "", new { @class = "form-control input-sm" })
+								</div>
+							</div>
+						</div>
+						<div class="form-group col-sm-3">
+							<div class="row">
+								<label class="control-label col-sm-4" for="CompanyID">
+									CompanyID
+								</label>
+								<div class="col-sm-8">
+									@Html.TextBox("CompanyID", "", new { @class = "form-control input-sm" })
+								</div>
+							</div>
+						</div>
+						<div class="form-group col-sm-3">
+							<div class="row">
+								<div class="col-sm-5">
+									<input type="button" value="Search" id="BtnBuscar" class="form-control btn btn-primary" />
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					@Html.DisplayForModel("Table", new { compact = true, Botones = false })
+				</div>
+				
+			</div>
+			<div id="divLoader" style="display:none" class="loader">
+			</div>
+		</div>
+
+
+	}
+</div>
+<p>
+</p>
+@section Scripts {
+	@Scripts.Render("~/bundles/jqueryval")
+
+	<script type="text/javascript">
+        var table; //Variable para cargar el objeto de la tabla que se esta mostrando
+        var listUrl = '@Url.Action("GetImeiList")'; 
+
+        $(document).ready(function () {
+			
+            getSavestate();  
+        });
+
+
+        function createTable() {
+        	table = $('#table-list').dataTable({
+        		dom: '<<<B><l>>r<t>ip>',//'<f>lftipB',
+        		buttons: [
+					{extend: 'copyHtml5', text: '<i class="far fa-clipboard blue"></i>', titleAttr: 'Copiar'},
+					{extend: 'csvHtml5' , text: '<i class="far fa-file-alt green"></i>', titleAttr: 'CSV', title:'List'}
+        		],
+        		"lengthMenu": [[10, 25, 50, 100, 200, 500, 1000, 2000], [10, 25, 50, 100, 200, 500, "1.000", "2.000"]],
+        		"responsive": true,
+        		"info": true,                   
+        		"pagingType": "full_numbers",
+        		"processing": true,
+        		"serverSide": true,
+        		"stateSave": true,
+        		"footer": false,
+        		autoFill: false,
+        		"columnDefs": [
+					   @Html.DisplayForModel("ColumnDef", new { compact = true, Botones = false })
+        		],
+        		"ajax": {
+        			"url": listUrl,
+        			"data": function (d) {
+        				d.IMEI = GetIMEI();
+        				d.CompanyID = GetCompanyID();
+        			},
+        			"dataType": "json",
+        			"contentType": "application/json",
+        			"type": "GET",
+        			"dataFilter" : function (data) {
+        				var json = jQuery.parseJSON(data);
+        				return JSON.stringify(json); // return JSON string
+        			},
+        			"error": function (xhr, error, thrown) {
+        				if (xhr.state() === "rejected")
+        				{                                  
+        				}
+        			}
+        		}                  
+        	});
+        }
+
+        function saveState() {
+            if (typeof (Storage) !== "undefined") {
+                // Store
+            }
+        }
+
+        function getSavestate() {
+            if (typeof (Storage) !== "undefined") {
+                // Retrieve
+            }
+        }
+
+        function GetCompanyID() {
+        	return $('#CompanyID').val();
+        } 
+
+        function GetIMEI() {
+        	return $('#IMEI').val();
+        }
+		
+        $('#BtnBuscar').on("click", function () {
+        	if ($('#IMEI').val() == "" || $('#CompanyID').val() == "") {
+        		alert("You must indicate the IMEI and the Company ID");
+        		return false;
+        	}			
+        	recargar_tabla();
+        });
+
+        function recargar_tabla(e) {
+        	this.preventDefault;
+
+        	if (typeof (table) !== "undefined") {
+        		//saveState();
+        		table.api().ajax.reload(null, false); //Recargar la tabla
+        	}
+        	else {
+        		createTable();
+
+        	}
+        }
+
+
+
+	</script>
+
+}

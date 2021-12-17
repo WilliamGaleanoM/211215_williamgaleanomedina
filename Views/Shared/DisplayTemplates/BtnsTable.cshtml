@@ -1,0 +1,106 @@
+﻿@model Encuestas_Enter.Models.TableParams
+@*Dictionary<string, object>*@
+
+@{
+    Layout = null;
+    string llave = Model.llave;
+    string llaveCustom = Model.llaveCustom;
+    string id = Model.id;
+    string entity_id = Model.entity_id;
+    string _Controller = HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString();
+
+
+    //foreach (KeyValuePair<string,object> it in Model)
+    //{
+    //    llave += string.Concat( it.Key ,"=" , it.Value.ToString(),"&");
+    //    if(it.Key=="id_cc")
+    //    {
+    //        id_cc = "id_cc=" + it.Value.ToString();
+    //    }
+    //}
+
+    //llave = llave.Trim().Remove(llave.Trim().Length - 1);
+}
+
+@{
+<div class="row">
+    <div class="btn-group">
+
+
+         @if (Model.ShowEdit && ViewContext.Controller.HasPermission((Model.ControllerEdit ?? _Controller) + "-" + Model.ActionEdit.Replace("#","")))
+         {
+             <a  href="@Url.Action(Model.ActionEdit, Model.ControllerEdit??_Controller)?@llave&parent=@Model.ParentPage" title="@Model.TitleEdit" data-value="@entity_id" data-pk="@llave" class="btn button-xs btnEdit">                
+                 @if (Model.ClassEdit == null)
+                 {
+                     <i class="fa fa-edit blue"></i>
+                 }
+                 else
+                 {
+                     <i class="@Model.ClassEdit"></i>
+                 }
+            </a>
+          }            
+        
+        @if(Model.ShowHistory && ViewContext.Controller.HasPermission((Model.ControllerHistory ?? _Controller) + "-" + Model.ActionHistory.Replace("#", "")))
+        {
+          <a href="@Url.Action(Model.ActionHistory, Model.ControllerHistory ?? _Controller )?@llave&parent=@Model.ParentPage" title="Historial" class="btn button-xs" >
+              <i class="fa fa-history purple"></i>
+          </a> 
+        }
+
+        @if(Model.ShowDetails && ViewContext.Controller.HasPermission((Model.ControllerDetails ?? _Controller) + "-" + Model.ActionDetails.Replace("#", "")))
+        {
+            <a href="@Url.Action(Model.ActionDetails, Model.ControllerDetails ?? _Controller)?@llave&parent=@Model.ParentPage" title="@Model.TitleDetails" class="btn button-xs" @(Model.NewPageDetails ? "target='_blank'" : "")>
+                  @if (Model.ClassDetails == null)
+                  {
+                      <i class="fa fa-eye green"></i>
+                  }else
+                  {
+                      <i class="@Model.ClassDetails"></i>
+                  }
+            </a>
+
+          }
+
+         @if(Model.ShowDelete && ViewContext.Controller.HasPermission((Model.ControllerDelete ?? _Controller) + "-" + Model.ActionDelete.Replace("#", "")))
+         {
+            <a href="@Url.Action(Model.ActionDelete, Model.ControllerDelete ?? _Controller)?@llave&parent=@Model.ParentPage" title="Eliminar?" class="btn button-xs" >
+                <i class="fas fa-trash red"></i>
+                <input id="valor" type="hidden" value="@llave"/>
+            </a>
+          }
+
+        @if (Model.ShowCustom && ViewContext.Controller.HasPermission((Model.ControllerCustom ?? _Controller) + "-" + Model.ActionCustom.Replace("#", "")))
+        {
+            if (Model.FunctionCustom == false)
+            {
+                <a href="@Url.Action(Model.ActionCustom, Model.ControllerCustom ?? _Controller)?@llave&parent=@Model.ParentPage" title="@Model.TitleCustom" class="btn button-xs" @(Model.NewPageCustom ? "target='_blank'" : "")>
+                    @if (Model.ClassCustom == null)
+                    {
+                        <i class="fas fa-sticky-note"></i>
+                    }
+                    else
+                    {
+                        <i class="@Model.ClassCustom"></i>
+                    }
+                </a>
+            }
+            else
+            {
+                <a href="#" onclick="return CustomButtonClic(this, '@Url.Action(Model.ActionCustom, (Model.ControllerCustom ?? _Controller))', '@(Model.ControllerCustom ?? _Controller)', @llaveCustom)" data-llave="@llaveCustom" data-action="@Url.Action(Model.ActionCustom, (Model.ControllerCustom ?? _Controller))" data-controlle="@(Model.ControllerCustom ?? _Controller)"  title="@Model.TitleCustom" class="btn button-xs" @(Model.NewPageCustom ? "target='_blank'" : "")>
+                    @if (Model.ClassCustom == null)
+                    {
+                        <i class="fas fa-sticky-note"></i>
+                    }
+                    else
+                    {
+                        <i class="@Model.ClassCustom"></i>
+                    }
+                </a>
+            }
+
+        }
+
+    </div>
+</div>
+        }
